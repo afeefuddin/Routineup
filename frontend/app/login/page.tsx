@@ -1,70 +1,146 @@
 "use client";
-import React from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import React from "react";
+import { LoginForm, LoginSchema } from "@/types/auth";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useTransition } from "react";
+import { useMutation } from "@tanstack/react-query";
+import useAxios from "@/hooks/use-axios";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
-export default function SignupFormDemo() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Form submitted");
+function Page() {
+  const [isPending, startTransition] = useTransition();
+  const axios = useAxios(true);
+  const router = useRouter();
+  const { toast } = useToast();
+  const { mutate: login, isPending: loggingIn } = useMutation({
+    mutationKey: ["login"],
+    mutationFn: async (data: LoginForm) => {
+      const response = await axios.post("/public/api/login", data);
+      return response;
+    },
+    onSuccess: (values) => {
+      console.log(values.result);
+      localStorage.setItem("token", values.result.token);
+      console.log("Logged in");
+      router.push("/home");
+    },
+    onError: () => {
+      toast({
+        title: "Invalid credintials",
+      });
+    },
+  });
+  const form = useForm<LoginForm>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+  const onSubmit = (values: LoginForm) => {
+    startTransition(() => {
+      console.log(values);
+      login(values);
+    });
   };
+
   return (
-    <div className="h-screen flex justify-center flex-col items-center">
-      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-        <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-          Welcome to Routineup
-        </h2>
-
-        <form className="my-8" onSubmit={handleSubmit}>
-          <LabelInputContainer className="mb-4">
-            <Label htmlFor="email">Email Address</Label>
-            <Input id="email" placeholder="projectmayhem@fc.com" type="email" />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-4">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" placeholder="••••••••" type="password" />
-          </LabelInputContainer>
-
-          <Button
-            className="bg-gradient-to-br relative group/btn from-black to-neutral-600 block  w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-            type="submit"
-          >
-            Login &rarr;
-            <BottomGradient />
-          </Button>
-
-          <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
-
-          <div>
-            Dont have an account? <span className="text-blue-600">Signup</span>
+    <div className="h-screen flex items-center w-full bg-teal-200">
+      <Card className="max-w-sm m-auto">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl">Login to your account</CardTitle>
+          <CardDescription>
+            Enter your email below to create your account
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-2"
+            >
+              <div className="grid gap-2">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          id="email"
+                          type="email"
+                          {...field}
+                          placeholder="m@example.com"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="grid gap-2">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          id="password"
+                          type="password"
+                          {...field}
+                          placeholder="Your Password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="w-full mt-6"
+              >
+                Login
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter className="flex items-center justify-center">
+          <div className="text-sm">
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="text-blue-600">
+              Signup
+            </Link>
           </div>
-        </form>
-      </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
 
-const BottomGradient = () => {
-  return (
-    <>
-      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-    </>
-  );
-};
-
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
-  );
-};
+export default Page;
