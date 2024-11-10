@@ -43,11 +43,11 @@ function Page() {
   const [otpValue, setOtpValue] = React.useState("");
   const { toast } = useToast();
   const router = useRouter();
-  const api = useAxios(true);
+  const { api } = useAxios(true);
   const { mutate, isPending } = useMutation({
     mutationKey: ["signup"],
     mutationFn: async (data: SignupForm) => {
-      const response = await api.post("/public/api/signup", data);
+      const response = await api?.post("/public/api/signup", data);
       return response;
     },
     onSuccess: (raw_data) => {

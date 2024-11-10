@@ -30,13 +30,13 @@ import { useToast } from "@/hooks/use-toast";
 
 function Page() {
   const [isPending, startTransition] = useTransition();
-  const axios = useAxios(true);
+  const {api: axios} = useAxios(true);
   const router = useRouter();
   const { toast } = useToast();
   const { mutate: login, isPending: loggingIn } = useMutation({
     mutationKey: ["login"],
     mutationFn: async (data: LoginForm) => {
-      const response = await axios.post("/public/api/login", data);
+      const response = await axios?.post("/public/api/login", data);
       return response;
     },
     onSuccess: (values) => {

@@ -1,7 +1,23 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
+"use client";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import useUser from "@/hooks/use-user";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const { user, isLoading, isError, isPending } = useUser();
+  const router = useRouter();
+  useEffect(() => {
+    if (isError) {
+      router.replace("/login");
+    }
+  }, [user, isLoading]);
+
+  // console.log(isLoading, isError, isPending)
+  if (isLoading || isError || isPending) {
+    return <div>Loading...</div>;
+  }
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -10,5 +26,5 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
     </SidebarProvider>
-  )
+  );
 }
