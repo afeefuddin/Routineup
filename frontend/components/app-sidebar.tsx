@@ -20,6 +20,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import useUser from "@/hooks/use-user";
 
 // Menu items.
 
@@ -30,8 +31,8 @@ const EducatorItems = [
     icon: Home,
   },
   {
-    title: "Create a group",
-    url: "#",
+    title: "Groups",
+    url: "/groups",
     icon: Users,
   },
   {
@@ -74,12 +75,13 @@ const Studentitems = [
   },
   {
     title: "Become an Educator",
-    url: "#",
+    url: "/become-educator",
     icon: Book,
   },
 ];
 
 export function AppSidebar() {
+  const { user } = useUser();
   return (
     <Sidebar>
       <SidebarContent>
@@ -87,16 +89,27 @@ export function AppSidebar() {
           <SidebarGroupLabel>Routineup</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {EducatorItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {user?.educator
+                ? EducatorItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild>
+                        <Link href={item.url}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))
+                : Studentitems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild>
+                        <Link href={item.url}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

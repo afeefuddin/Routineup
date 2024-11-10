@@ -17,5 +17,8 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :user
+    resources :educator
+    resources :subjects
+    resources :group
   end
 end
