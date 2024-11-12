@@ -4,28 +4,26 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-// This would typically come from your database or API
-const subjectDetails = {
-  id: 1,
-  code: "MATH101",
-  name: "Introduction to Calculus",
-  completed: false,
-  groups: [
-    { id: 1, name: "Group A" },
-    { id: 2, name: "Group B" },
-  ],
-  classesConducted: 15,
-  totalStudents: 50,
-  averageAttendance: 85,
-};
+import { useQuery } from "@tanstack/react-query";
+import useAxios from "@/hooks/use-axios";
+import useGroup from "@/hooks/use-group";
 
 export default function SubjectDetailsPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const subjectId = params.id;
+  const { api } = useAxios();
+  const { groups } = useGroup();
 
-  // In a real application, you would fetch the subject details using the subjectId
+  const { data: subjectDetails } = useQuery({
+    queryKey: ["subject-data", subjectId],
+    queryFn: async () => {
+      const data = await api.get(`/api/subjects/${subjectId}`);
+      console.log(data);
+      return data.result;
+    },
+  });
+ 
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -36,8 +34,8 @@ export default function SubjectDetailsPage() {
       <Card>
         <CardHeader className="bg-secondary">
           <CardTitle className="flex justify-between items-center text-2xl">
-            <span>{subjectDetails.code}</span>
-            {subjectDetails.completed && (
+            <span>{subjectDetails?.code}</span>
+            {subjectDetails?.completed && (
               <span className="text-sm bg-green-500 text-white px-2 py-1 rounded-full">
                 Completed
               </span>
@@ -45,12 +43,12 @@ export default function SubjectDetailsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
-          <h1 className="text-3xl font-bold">{subjectDetails.name}</h1>
+          <h1 className="text-3xl font-bold">{subjectDetails?.name}</h1>
 
           <div>
             <h2 className="text-xl font-semibold mb-2">Groups</h2>
             <ul className="list-disc list-inside">
-              {subjectDetails.groups.map((group) => (
+              {subjectDetails?.groups?.map((group) => (
                 <li key={group.id}>{group.name}</li>
               ))}
             </ul>
@@ -63,7 +61,7 @@ export default function SubjectDetailsPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-4xl font-bold">
-                  {subjectDetails.classesConducted}
+                  {subjectDetails?.classesConducted}
                 </p>
               </CardContent>
             </Card>
@@ -73,7 +71,7 @@ export default function SubjectDetailsPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-4xl font-bold">
-                  {subjectDetails.totalStudents}
+                  {subjectDetails?.totalStudents}
                 </p>
               </CardContent>
             </Card>
@@ -83,7 +81,7 @@ export default function SubjectDetailsPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-4xl font-bold">
-                  {subjectDetails.averageAttendance}%
+                  {subjectDetails?.averageAttendance}%
                 </p>
               </CardContent>
             </Card>

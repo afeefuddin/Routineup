@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default function TagInput() {
-  const [tags, setTags] = useState<string[]>([]);
+export default function TagInput({tags, setTags}: {tags: string[], setTags: Dispatch<SetStateAction<string[]>>}) {
   const [inputValue, setInputValue] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

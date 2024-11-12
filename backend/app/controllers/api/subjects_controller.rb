@@ -21,7 +21,7 @@ class Api::SubjectsController < ApiController
   def show
     subject = Subject.find_by(public_id: params[:id])
     render json: {
-      result: SubjectBluePrint.render_as_hash(subject)
+      result: SubjectBlueprint.render_as_hash(subject)
     }
   end
 

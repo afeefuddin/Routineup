@@ -16,25 +16,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import TagInput from "@/components/mutli-data-input";
-
-// This would typically come from your database or API
-const subjects = [];
+import { useMutation, useQuery } from "@tanstack/react-query";
+import useAxios from "@/hooks/use-axios";
+import useGroup from "@/hooks/use-group";
 
 export default function GroupsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newSubject, setNewSubject] = useState({ name: "", code: "" });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewSubject({ ...newSubject, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Here you would typically send the new subject data to your backend
-    console.log("New subject:", newSubject);
-    setIsDialogOpen(false);
-    setNewSubject({ name: "", code: "" });
-  };
+  const [newGroup, setNewGroup] = useState<string>("");
+  const { api } = useAxios();
+  const [emails, setEmails] = useState<string[]>([]);
+  const { groups, refetch } = useGroup();
+  const { mutate: createGroup } = useMutation({
+    mutationKey: ["createGroup"],
+    mutationFn: async () => {
+      const { data } = await api.post("/api/group", {
+        group_name: newGroup,
+        emails: emails,
+      });
+      return data;
+    },
+    onSuccess: () => {
+      refetch();
+      setNewGroup("");
+      setEmails([]);
+      setIsDialogOpen(false);
+    },
+  });
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -53,29 +60,38 @@ export default function GroupsPage() {
                 Enter the details for your new group.
               </DialogDescription>
             </DialogHeader>
-            <div  className="space-y-4">
+            <div className="space-y-4">
               <div>
                 <Label htmlFor="name">Group Name</Label>
                 <Input
                   id="name"
                   name="name"
-                  value={newSubject.name}
-                  onChange={handleInputChange}
+                  value={newGroup}
+                  onChange={(e) => setNewGroup(e.target.value)}
                   required
                 />
               </div>
               <div>
                 <Label htmlFor="emails">Emails</Label>
-                <TagInput />
+                <TagInput tags={emails} setTags={setEmails} />
               </div>
-              <Button type="submit" className="w-full">
-                Add Subject
+              <Button
+                type="submit"
+                className="w-full"
+                onClick={() => {
+                  console.log(emails);
+                  if (newGroup && emails) {
+                    createGroup();
+                  }
+                }}
+              >
+                Add Group
               </Button>
             </div>
           </DialogContent>
         </header>
 
-        {subjects.length === 0 ? (
+        {groups?.length === 0 ? (
           <Card className="p-6 text-center">
             <h2 className="text-xl font-semibold mb-2">No groups found</h2>
             <p className="text-muted-foreground mb-4">
@@ -89,25 +105,22 @@ export default function GroupsPage() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {subjects.map((subject) => (
+            {groups?.map((subject) => (
               <Card key={subject.id}>
                 <CardHeader className="bg-secondary">
                   <CardTitle className="flex justify-between items-center text-lg">
-                    <span>{subject.code}</span>
-                    {subject.completed && (
-                      <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">
-                        Completed
-                      </span>
-                    )}
+                    Total Students: 0
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
-                  <h3 className="font-semibold text-lg mb-4">{subject.name}</h3>
-                  <Link href={`/subjects/${subject.id}`}>
-                    <Button variant="outline" className="w-full">
-                      View Details
-                    </Button>
-                  </Link>
+                  <h3 className="font-semibold text-lg mb-4">
+                    {subject.group_name}
+                  </h3>
+                  {/* <Link href={`/subjects/${subject.id}`}> */}
+                  <Button variant="outline" className="w-full">
+                    View Details
+                  </Button>
+                  {/* </Link> */}
                 </CardContent>
               </Card>
             ))}
