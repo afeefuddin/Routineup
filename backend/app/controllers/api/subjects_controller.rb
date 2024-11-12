@@ -33,12 +33,12 @@ class Api::SubjectsController < ApiController
       subject.completed = true
       subject.save
     elsif params[:group_id]
-      subject.groups = Group.where(public_id: params[:group_id])
+      subject.groups = Group.where(public_id: params[:group_id], admin: current_user)
       subject.save
     end
 
     render json: {
-      result: SubjectBluePrint.render_as_hash(subject)
+      result: SubjectBlueprint.render_as_hash(subject)
     }
   end
 

@@ -1,12 +1,29 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import useAxios from "@/hooks/use-axios";
 import useGroup from "@/hooks/use-group";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
+import { Label } from "@radix-ui/react-label";
 
 export default function SubjectDetailsPage() {
   const router = useRouter();
@@ -14,6 +31,10 @@ export default function SubjectDetailsPage() {
   const subjectId = params.id;
   const { api } = useAxios();
   const { groups } = useGroup();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<string | undefined>(
+    undefined
+  );
 
   const { data: subjectDetails } = useQuery({
     queryKey: ["subject-data", subjectId],
@@ -23,7 +44,24 @@ export default function SubjectDetailsPage() {
       return data.result;
     },
   });
- 
+
+  const { mutate: addGroupToSubject, isPending } = useMutation({
+    mutationKey: ["add-group-to-subject"],
+    mutationFn: async () => {
+      const { data } = await api.put(`/api/subjects/${subjectId}`, {
+        group_id: selectedGroup,
+      });
+      return data;
+    },
+    onSuccess: () => {},
+  });
+
+  const remainingGroups = groups?.filter(
+    (group) =>
+      !subjectDetails?.groups?.map((g) => g.public_id).includes(group.public_id)
+  );
+
+  console.log(remainingGroups);
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -34,7 +72,7 @@ export default function SubjectDetailsPage() {
       <Card>
         <CardHeader className="bg-secondary">
           <CardTitle className="flex justify-between items-center text-2xl">
-            <span>{subjectDetails?.code}</span>
+            <span>{subjectDetails?.subject_code}</span>
             {subjectDetails?.completed && (
               <span className="text-sm bg-green-500 text-white px-2 py-1 rounded-full">
                 Completed
@@ -45,11 +83,61 @@ export default function SubjectDetailsPage() {
         <CardContent className="pt-6 space-y-6">
           <h1 className="text-3xl font-bold">{subjectDetails?.name}</h1>
 
-          <div>
-            <h2 className="text-xl font-semibold mb-2">Groups</h2>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row justify-between">
+              <h2 className="text-xl font-semibold mb-2">Groups</h2>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" disabled={remainingGroups?.length === 0}>
+                    <Plus className="mr-2 h-4 w-4" /> Add Group
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add Group to Subject</DialogTitle>
+                    <DialogDescription>
+                      Select a group to add to this subject.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="groupSelect">Select Group</Label>
+                      <Select
+                        value={selectedGroup}
+                        onValueChange={setSelectedGroup}
+                      >
+                        <SelectTrigger id="groupSelect">
+                          <SelectValue placeholder="Select a group" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {remainingGroups?.map((group) => (
+                            <SelectItem
+                              key={group.public_id}
+                              value={group.public_id}
+                            >
+                              {group.group_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={!selectedGroup || isPending}
+                      onClick={() => addGroupToSubject()}
+                    >
+                      Add Group
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
             <ul className="list-disc list-inside">
               {subjectDetails?.groups?.map((group) => (
-                <li key={group.id}>{group.name}</li>
+                <Card key={group.public_id} className="bg-muted p-3 rounded-md">
+                  {group.group_name}
+                </Card>
               ))}
             </ul>
           </div>
