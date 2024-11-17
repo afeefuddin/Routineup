@@ -7,6 +7,7 @@ const lectureSchema = z.object({
   start_time: z.string(),
   end_time: z.nullable(z.string().optional()),
   public_id: z.string(),
+  cancelled: z.boolean(),
 });
 
 const lectureWithSubjectSchema = lectureSchema.extend({

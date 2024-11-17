@@ -6,6 +6,7 @@ class User < ApplicationRecord
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, presence: true, uniqueness: true
   has_one :educator, dependent: :destroy
   has_and_belongs_to_many :groups, join_table: 'groups_users'
+  has_many :group_invites, dependent: :destroy
 
   def subjects
     groups.joins(:subjects).uniq

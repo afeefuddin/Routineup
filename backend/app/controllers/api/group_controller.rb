@@ -1,6 +1,5 @@
 class Api::GroupController < ApiController
   def index
-    debugger
     groups = if educator
                Group.where(admin: current_user).all
              else
@@ -40,7 +39,8 @@ class Api::GroupController < ApiController
           {
             group_id: @group.id,
             user_id: user.id,
-            invited_by_id: current_user.id
+            invited_by_id: current_user.id,
+            status: 'pending'
           }
         end
       )

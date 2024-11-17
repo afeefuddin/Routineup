@@ -1,14 +1,20 @@
 class Api::SubjectsController < ApiController
-  before_action :authenticate_scrubber
+  # before_action :authenticate_scrubber
   def index
-    subjects = Subject.where(educator: current_user.educator).all
+    subjects = if educator
+
+                 Subject.where(educator: current_user.educator).all
+               else
+                 current_user.groups.includes(:subjects).flat_map(&:subjects)
+
+               end
     render json: {
       results: SubjectBlueprint.render_as_hash(subjects)
     }
   end
 
   def create
-    return unless educator
+    authenticate_scrubber
     return if subject_params[:name].nil?
 
     subject = Subject.create(subject_params)
@@ -27,6 +33,7 @@ class Api::SubjectsController < ApiController
   end
 
   def update
+    authenticate_scrubber
     subject = Subject.find_by(public_id: params[:id])
     return render json: { error: 'Subject not found' }, status: :not_found if subject.nil?
 

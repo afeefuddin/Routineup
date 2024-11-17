@@ -85,6 +85,16 @@ export default function Classes() {
     },
   });
 
+  const { mutate: cancelClass } = useMutation({
+    mutationKey: ["cancel-class"],
+    mutationFn: async () => {
+      await api.put("/api/lecture/" + params.id + "/cancel", {});
+    },
+    onSuccess() {
+      router.push("/classes");
+    },
+  });
+
   const handleAddClass = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("New class:", newClass);
@@ -111,6 +121,7 @@ export default function Classes() {
                 setNewClass({ ...newClass, topic: e.target.value })
               }
               required
+              disabled={classData.cancelled}
             />
           </div>
           <div className="space-y-2">
@@ -122,6 +133,7 @@ export default function Classes() {
                 setNewClass({ ...newClass, description: e.target.value })
               }
               required
+              disabled={classData.cancelled}
             />
           </div>
 
@@ -156,6 +168,7 @@ export default function Classes() {
                 setNewClass({ ...newClass, start_time: e.target.value })
               }
               required
+              disabled={classData.cancelled}
             />
           </div>
           <div className="space-y-2">
@@ -167,11 +180,23 @@ export default function Classes() {
               onChange={(e) =>
                 setNewClass({ ...newClass, end_time: e.target.value })
               }
+              disabled={classData.cancelled}
             />
           </div>
-          <Button type="submit" className="w-full">
-            Update Class
-          </Button>
+          {!classData.cancelled && (
+            <div className="flex items-center gap-4">
+              <Button
+                type="button"
+                className="w-full bg-red-500 hover:bg-red-500 text-white"
+                onClick={() => cancelClass()}
+              >
+                Cancel Class
+              </Button>
+              <Button type="submit" className="w-full">
+                Update Class
+              </Button>
+            </div>
+          )}
         </form>
       </div>
     </div>

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import useAxios from "@/hooks/use-axios";
 import useSubjects from "@/hooks/use-subjects";
 
@@ -23,7 +23,7 @@ export default function SubjectsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newSubject, setNewSubject] = useState({ name: "", code: "" });
   const { api } = useAxios();
-  const { subjects, isLoading, refetch } = useSubjects();
+  const { subjects, refetch } = useSubjects();
 
   const { mutate: AddSubject } = useMutation({
     mutationKey: ["AddSubject"],

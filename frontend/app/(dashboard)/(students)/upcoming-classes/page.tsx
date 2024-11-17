@@ -11,17 +11,14 @@ import {
   addMonths,
   subMonths,
 } from "date-fns";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useAxios from "@/hooks/use-axios";
 import { z } from "zod";
 import { lectureSchema } from "@/types/lecture";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-// Mock data for classes
 
 export default function UpcomingClassesPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -38,7 +35,6 @@ export default function UpcomingClassesPage() {
   };
 
   const { api } = useAxios();
-  const router = useRouter();
 
   const { data: classes } = useQuery({
     queryKey: ["classes"],
@@ -51,8 +47,6 @@ export default function UpcomingClassesPage() {
     },
   });
 
-  console.log(classes);
-
   const classesForSelectedDate = selectedDate
     ? classes?.filter((c) => isSameDay(c.start_time, selectedDate))
     : [];
@@ -61,9 +55,6 @@ export default function UpcomingClassesPage() {
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Upcoming Classes</h1>
-        <Button onClick={() => router.push("/classes/add")}>
-          <Plus className="mr-2 h-4 w-4" /> Schedule Class
-        </Button>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -134,19 +125,12 @@ export default function UpcomingClassesPage() {
             {classesForSelectedDate?.length ? (
               <div className="flex flex-col gap-4">
                 {classesForSelectedDate?.map((classItem) => (
-                  <Link
-                    href={`/classes/${classItem.public_id}`}
-                    key={classItem.public_id}
-                  >
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>{classItem.topic}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                         
-                      </CardContent>
-                    </Card>
-                  </Link>
+                  <Card key={classItem.public_id}>
+                    <CardHeader>
+                      <CardTitle>{classItem.topic}</CardTitle>
+                    </CardHeader>
+                    <CardContent></CardContent>
+                  </Card>
                 ))}
               </div>
             ) : selectedDate ? (
@@ -169,25 +153,20 @@ export default function UpcomingClassesPage() {
         <CardContent>
           <div className="flex flex-col gap-4">
             {classes?.map((classItem) => (
-              <Link
-                href={`/classes/${classItem.public_id}`}
-                key={classItem.public_id}
-              >
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{classItem.topic}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-row justify-between">
-                      <div>{classItem.description}</div>
-                      <div className="text-muted-foreground">
-                        {format(classItem.start_time, "Pp")}
-                      </div>
+              <Card key={classItem.public_id}>
+                <CardHeader>
+                  <CardTitle>{classItem.topic}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-row justify-between">
+                    <div>{classItem.description}</div>
+                    <div className="text-muted-foreground">
+                      {format(classItem.start_time, "Pp")}
                     </div>
-                    <div></div>
-                  </CardContent>
-                </Card>
-              </Link>
+                  </div>
+                  <div></div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </CardContent>

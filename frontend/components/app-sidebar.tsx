@@ -60,17 +60,17 @@ const Studentitems = [
   },
   {
     title: "Inbox",
-    url: "#",
+    url: "/inbox",
     icon: Inbox,
   },
   {
-    title: "Calendar",
-    url: "#",
+    title: "Upcoming classes",
+    url: "/upcoming-classes",
     icon: Calendar,
   },
   {
-    title: "Search",
-    url: "#",
+    title: "Your Subjects",
+    url: "/your-subjects",
     icon: Search,
   },
   {

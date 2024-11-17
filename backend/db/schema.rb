@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 20_241_115_223_101) do
+ActiveRecord::Schema[7.1].define(version: 20_241_117_182_347) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
 
@@ -36,6 +36,8 @@ ActiveRecord::Schema[7.1].define(version: 20_241_115_223_101) do
     t.bigint 'user_id', null: false
     t.bigint 'invited_by_id', null: false
     t.integer 'sent_count', default: 0
+    t.string 'status', default: 'pending'
+    t.string 'public_id'
     t.index ['group_id'], name: 'index_group_invites_on_group_id'
     t.index ['invited_by_id'], name: 'index_group_invites_on_invited_by_id'
     t.index ['user_id'], name: 'index_group_invites_on_user_id'
@@ -76,14 +78,15 @@ ActiveRecord::Schema[7.1].define(version: 20_241_115_223_101) do
     t.datetime 'end_time'
     t.bigint 'subject_id', null: false
     t.string 'public_id'
+    t.boolean 'cancelled', default: false
     t.index ['subject_id'], name: 'index_lectures_on_subject_id'
   end
 
   create_table 'subjects', force: :cascade do |t|
     t.string 'name'
-    t.string 'educator_id'
+    t.string 'subject_code'
     t.boolean 'completed', default: false
-    t.bigint 'subject_code', null: false
+    t.bigint 'educator_id', null: false
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.string 'public_id'

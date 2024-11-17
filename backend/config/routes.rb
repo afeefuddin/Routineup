@@ -20,6 +20,11 @@ Rails.application.routes.draw do
     resources :educator
     resources :subjects
     resources :group
-    resources :lecture
+    resources :lecture do
+      member do
+        put :cancel
+      end
+    end
+    resources :invite
   end
 end

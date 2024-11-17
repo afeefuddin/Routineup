@@ -5,4 +5,11 @@ class UserBlueprint < Blueprinter::Base
   view :with_educator do
     association :educator, blueprint: EducatorBlueprint
   end
+
+  view :invited_by do
+    exclude :verified
+    exclude :profile_completed
+    exclude :created_at
+    exclude :updated_at
+  end
 end

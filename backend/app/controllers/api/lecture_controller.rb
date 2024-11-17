@@ -1,4 +1,20 @@
 class Api::LectureController < ApiController
+  def index
+    lectures = if educator
+                 educator_lecture
+               else
+                 Lecture.distinct
+                        .includes(:subject)
+                        .joins(subject: :groups)
+                        .where(groups: { id: current_user.groups })
+               end
+
+    puts lectures.inspect
+    render json: {
+      results: LectureBlueprint.render_as_hash(lectures)
+    }
+  end
+
   def create
     return unless educator
     return invalid_params unless params[:subject_id] && params[:topic] && params[:description] && params[:start_time]
@@ -15,17 +31,6 @@ class Api::LectureController < ApiController
                              notes: params[:notes], start_time: params[:start_time], end_time: params[:end_time])
 
     render json: { result: LectureBlueprint.render_as_hash(lecture) }
-  end
-
-  def index
-    lectures = if educator
-                 educator_lecture
-               else
-                 Subject.joins(:groups).joins(:lectures).where({ groups: current_user.groups }).map(&:lectures).uniq
-               end
-    render json: {
-      results: LecutreBlueprint.render_as_hash(lectures)
-    }
   end
 
   def show
@@ -48,6 +53,15 @@ class Api::LectureController < ApiController
     update_list[:topic] = params[:topic] if params[:topic]
     update_list[:description] = params[:description] if params[:description]
     lecture.update(update_list)
+
+    render json: { result: LectureBlueprint.render_as_hash(lecture) }
+  end
+
+  def cancel
+    return unless educator
+
+    lecture = educator_lecture.find_by(public_id: params[:id])
+    lecture.update(cancelled: true)
 
     render json: { result: LectureBlueprint.render_as_hash(lecture) }
   end
