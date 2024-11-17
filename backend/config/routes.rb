@@ -20,5 +20,6 @@ Rails.application.routes.draw do
     resources :educator
     resources :subjects
     resources :group
+    resources :lecture
   end
 end

@@ -6,7 +6,11 @@ import axios from "axios";
 export default function useAxios(publicRoute = false) {
   const backend_origin = process.env.NEXT_PUBLIC_BACKEND_ORIGIN;
 
-  const { data: token, isLoading } = useQuery({
+  const {
+    data: token,
+    isLoading,
+    refetch: refetchToken,
+  } = useQuery({
     queryKey: ["local-storage", "token"],
     queryFn: async () => {
       return localStorage.getItem("token");
@@ -22,7 +26,7 @@ export default function useAxios(publicRoute = false) {
 
   const api = new Api(token, backend_origin);
 
-  return { api, token, isGettingToken: isLoading };
+  return { api, token, isGettingToken: isLoading, refetchToken };
 }
 
 class Api {

@@ -30,7 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 
 function Page() {
   const [isPending, startTransition] = useTransition();
-  const {api: axios} = useAxios(true);
+  const { api: axios, refetchToken } = useAxios(true);
   const router = useRouter();
   const { toast } = useToast();
   const { mutate: login, isPending: loggingIn } = useMutation({
@@ -42,6 +42,7 @@ function Page() {
     onSuccess: (values) => {
       console.log(values.result);
       localStorage.setItem("token", values.result.token);
+      refetchToken();
       console.log("Logged in");
       router.push("/home");
     },

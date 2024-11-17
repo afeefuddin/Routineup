@@ -1,13 +1,18 @@
 class Api::GroupController < ApiController
   def index
-    groups = Group.where(admin: current_user).all
+    debugger
+    groups = if educator
+               Group.where(admin: current_user).all
+             else
+               current_user.groups
+             end
     render json: {
       results: GroupBlueprint.render_as_hash(groups)
     }
   end
 
   def create
-    puts "these are the params #{group_params}"
+    return unless educator
     return unless group_params[:emails]
 
     @non_verified_emails = []

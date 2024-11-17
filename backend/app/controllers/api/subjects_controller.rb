@@ -8,6 +8,7 @@ class Api::SubjectsController < ApiController
   end
 
   def create
+    return unless educator
     return if subject_params[:name].nil?
 
     subject = Subject.create(subject_params)

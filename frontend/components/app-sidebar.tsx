@@ -42,12 +42,12 @@ const EducatorItems = [
   },
   {
     title: "Upcoming classes",
-    url: "#",
+    url: "/classes",
     icon: GraduationCap,
   },
   {
     title: "Schedule classes",
-    url: "#",
+    url: "/classes/add",
     icon: Presentation,
   },
 ];

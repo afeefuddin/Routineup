@@ -14,71 +14,18 @@ import {
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import useAxios from "@/hooks/use-axios";
+import { z } from "zod";
+import { lectureSchema } from "@/types/lecture";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // Mock data for classes
-const classes = [
-  {
-    id: 1,
-    name: "Mathematics",
-    date: new Date(2023, 5, 15, 10, 0),
-    subject: "MATH101",
-  },
-  {
-    id: 2,
-    name: "Physics",
-    date: new Date(2023, 5, 15, 14, 0),
-    subject: "PHYS201",
-  },
-  {
-    id: 3,
-    name: "Chemistry",
-    date: new Date(2023, 5, 18, 11, 0),
-    subject: "CHEM301",
-  },
-  {
-    id: 4,
-    name: "Biology",
-    date: new Date(2023, 5, 20, 9, 0),
-    subject: "BIO101",
-  },
-];
-
-// Mock data for subjects
-const subjects = [
-  { id: 1, code: "MATH101", name: "Introduction to Calculus" },
-  { id: 2, code: "PHYS201", name: "Classical Mechanics" },
-  { id: 3, code: "CHEM301", name: "Organic Chemistry" },
-  { id: 4, code: "BIO101", name: "General Biology" },
-];
 
 export default function UpcomingClassesPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newClass, setNewClass] = useState({
-    name: "",
-    subject: "",
-    date: "",
-    time: "",
-  });
-
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
@@ -88,100 +35,35 @@ export default function UpcomingClassesPage() {
 
   const handleDateClick = (day: Date) => {
     setSelectedDate(day);
-    setNewClass((prev) => ({ ...prev, date: format(day, "yyyy-MM-dd") }));
   };
 
-  const handleAddClass = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Here you would typically send the new class data to your backend
-    console.log("New class:", newClass);
-    setIsDialogOpen(false);
-    setNewClass({ name: "", subject: "", date: "", time: "" });
-  };
+  const { api } = useAxios();
+  const router = useRouter();
+
+  const { data: classes } = useQuery({
+    queryKey: ["classes"],
+    queryFn: async () => {
+      const raw_data = await api.get("/api/lecture");
+      const data = z
+        .object({ results: z.array(lectureSchema) })
+        .parse(raw_data);
+      return data.results;
+    },
+  });
+
+  console.log(classes);
 
   const classesForSelectedDate = selectedDate
-    ? classes.filter((c) => isSameDay(c.date, selectedDate))
+    ? classes?.filter((c) => isSameDay(c.start_time, selectedDate))
     : [];
 
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Upcoming Classes</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Schedule Class
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Schedule New Class</DialogTitle>
-              <DialogDescription>
-                Enter the details for the new class.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleAddClass} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="className">Class Name</Label>
-                <Input
-                  id="className"
-                  value={newClass.name}
-                  onChange={(e) =>
-                    setNewClass({ ...newClass, name: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="subjectSelect">Subject</Label>
-                <Select
-                  value={newClass.subject}
-                  onValueChange={(value) =>
-                    setNewClass({ ...newClass, subject: value })
-                  }
-                >
-                  <SelectTrigger id="subjectSelect">
-                    <SelectValue placeholder="Select a subject" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {subjects.map((subject) => (
-                      <SelectItem key={subject.id} value={subject.code}>
-                        {subject.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="classDate">Date</Label>
-                <Input
-                  id="classDate"
-                  type="date"
-                  value={newClass.date}
-                  onChange={(e) =>
-                    setNewClass({ ...newClass, date: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="classTime">Time</Label>
-                <Input
-                  id="classTime"
-                  type="time"
-                  value={newClass.time}
-                  onChange={(e) =>
-                    setNewClass({ ...newClass, time: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                Schedule Class
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => router.push("/classes/add")}>
+          <Plus className="mr-2 h-4 w-4" /> Schedule Class
+        </Button>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -214,7 +96,7 @@ export default function UpcomingClassesPage() {
               ))}
             </div>
             <div className="grid grid-cols-7 gap-2 mt-2">
-              {monthDays.map((day, dayIdx) => (
+              {monthDays.map((day) => (
                 <div
                   key={day.toString()}
                   className={`aspect-square flex flex-col items-center justify-center p-2 rounded-md cursor-pointer ${
@@ -231,7 +113,7 @@ export default function UpcomingClassesPage() {
                   onClick={() => handleDateClick(day)}
                 >
                   <span className="text-sm">{format(day, "d")}</span>
-                  {classes.some((c) => isSameDay(c.date, day)) && (
+                  {classes?.some((c) => isSameDay(c.start_time, day)) && (
                     <div className="w-1 h-1 bg-primary-foreground rounded-full mt-1" />
                   )}
                 </div>
@@ -249,23 +131,20 @@ export default function UpcomingClassesPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {classesForSelectedDate.length > 0 ? (
+            {classesForSelectedDate?.length ? (
               <div className="space-y-4">
-                {classesForSelectedDate.map((classItem) => (
-                  <Card key={classItem.id}>
-                    <CardHeader>
-                      <CardTitle>{classItem.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p>
-                        <strong>Subject:</strong> {classItem.subject}
-                      </p>
-                      <p>
-                        <strong>Time:</strong>{" "}
-                        {format(classItem.date, "h:mm a")}
-                      </p>
-                    </CardContent>
-                  </Card>
+                {classesForSelectedDate?.map((classItem) => (
+                  <Link
+                    href={`/classes/${classItem.public_id}`}
+                    key={classItem.public_id}
+                  >
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>{classItem.topic}</CardTitle>
+                      </CardHeader>
+                      <CardContent></CardContent>
+                    </Card>
+                  </Link>
                 ))}
               </div>
             ) : selectedDate ? (
@@ -286,25 +165,27 @@ export default function UpcomingClassesPage() {
           <CardTitle>All Upcoming Classes</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {classes.map((classItem) => (
-              <Card key={classItem.id}>
-                <CardHeader>
-                  <CardTitle>{classItem.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    <strong>Subject:</strong> {classItem.subject}
-                  </p>
-                  <p>
-                    <strong>Date:</strong>{" "}
-                    {format(classItem.date, "MMMM d, yyyy")}
-                  </p>
-                  <p>
-                    <strong>Time:</strong> {format(classItem.date, "h:mm a")}
-                  </p>
-                </CardContent>
-              </Card>
+          <div className="flex flex-col gap-4">
+            {classes?.map((classItem) => (
+              <Link
+                href={`/classes/${classItem.public_id}`}
+                key={classItem.public_id}
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{classItem.topic}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-row justify-between">
+                      <div>{classItem.description}</div>
+                      <div className="text-muted-foreground">
+                        {format(classItem.start_time, "Pp")}
+                      </div>
+                    </div>
+                    <div></div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </CardContent>
