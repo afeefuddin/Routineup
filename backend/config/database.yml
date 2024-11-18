@@ -14,6 +14,8 @@
 #
 default: &default
   adapter: postgresql
+  prepared_statements: false
+  advisory_locks: false
   encoding: unicode
   username: "postgres"
   password: "1234"
