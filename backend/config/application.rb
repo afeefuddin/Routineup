@@ -26,8 +26,13 @@ module Backend
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.perform_deliveries = true
     config.action_mailer.raise_delivery_errors = true
-    host = 'localhost:3000'
-    config.action_mailer.default_url_options = { host: host, protocol: 'http' }
+    host = if Rails.env.production?
+             ENV.fetch('APP_HOST', 'routineup-api.afeefuddin.me')
+           else
+             'localhost:3000'
+           end
+
+    config.action_mailer.default_url_options = { host: host, protocol: Rails.env.production? ? 'https' : 'http' }
 
     config.action_mailer.smtp_settings = {
       address: 'smtp.gmail.com',
