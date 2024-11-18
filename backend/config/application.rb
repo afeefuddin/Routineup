@@ -36,7 +36,7 @@ module Backend
 
     config.action_mailer.smtp_settings = {
       address: 'smtp.gmail.com',
-      post: 587,
+      port: 587,
       user_name: config.x.gmail_username,
       password: config.x.gmail_password,
       authentication: 'plain',
