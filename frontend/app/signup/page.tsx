@@ -44,9 +44,11 @@ function Page() {
   const { toast } = useToast();
   const router = useRouter();
   const { api } = useAxios(true);
-  const { mutate, isPending } = useMutation({
+  const [signingUp, setSigninUp] = useState(false);
+  const { mutate } = useMutation({
     mutationKey: ["signup"],
     mutationFn: async (data: SignupForm) => {
+      setSigninUp(true);
       const response = await api?.post("/public/api/signup", data);
       return response;
     },
@@ -57,6 +59,7 @@ function Page() {
       setShowOtpPanel(true);
     },
     onError: (error: AxiosError) => {
+      setSigninUp(false);
       toast({
         title: error.response?.data?.result.message,
         // message: error.message,
@@ -211,7 +214,9 @@ function Page() {
                     )}
                   />
                 </div>
-                <Button className="w-full mt-6">Create account</Button>
+                <Button className="w-full mt-6" loading={signingUp}>
+                  Create account
+                </Button>
               </form>
             </Form>
           </CardContent>

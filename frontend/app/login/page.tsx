@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { LoginForm, LoginSchema } from "@/types/auth";
 import {
   Form,
@@ -31,12 +31,14 @@ import { useToast } from "@/hooks/use-toast";
 
 function Page() {
   const [isPending, startTransition] = useTransition();
+  const [loggingIn, isLogginIn] = useState(false);
   const { api: axios, refetchToken } = useAxios(true);
   const router = useRouter();
   const { toast } = useToast();
-  const { mutate: login, isPending: loggingIn } = useMutation({
+  const { mutate: login } = useMutation({
     mutationKey: ["login"],
     mutationFn: async (data: LoginForm) => {
+      isLogginIn(true);
       const response = await axios?.post("/public/api/login", data);
       return response;
     },
@@ -48,6 +50,7 @@ function Page() {
       router.push("/home");
     },
     onError: () => {
+      isLogginIn(false);
       toast({
         title: "Invalid credintials",
       });
@@ -126,6 +129,7 @@ function Page() {
                 type="submit"
                 disabled={isPending}
                 className="w-full mt-6"
+                loading={loggingIn}
               >
                 Login
               </Button>
