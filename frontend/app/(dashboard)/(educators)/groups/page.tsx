@@ -25,7 +25,7 @@ export default function GroupsPage() {
   const { api } = useAxios();
   const [emails, setEmails] = useState<string[]>([]);
   const { groups, refetch } = useGroup();
-  const { mutate: createGroup } = useMutation({
+  const { mutate: createGroup, isPending: creatingGroup } = useMutation({
     mutationKey: ["createGroup"],
     mutationFn: async () => {
       const { data } = await api.post("/api/group", {
@@ -83,6 +83,7 @@ export default function GroupsPage() {
                     createGroup();
                   }
                 }}
+                loading={creatingGroup}
               >
                 Add Group
               </Button>

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Calendar,
   Home,
@@ -12,6 +14,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -21,6 +24,9 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import useUser from "@/hooks/use-user";
+import { useMutation } from "@tanstack/react-query";
+import useAxios from "@/hooks/use-axios";
+import { useRouter } from "next/navigation";
 
 // Menu items.
 
@@ -82,6 +88,17 @@ const Studentitems = [
 
 export function AppSidebar() {
   const { user } = useUser();
+  const router = useRouter();
+  const { mutate } = useMutation({
+    mutationKey: ["logout"],
+    mutationFn: async () => {
+      localStorage.clear();
+    },
+    onSuccess() {
+      router.push("/login");
+    },
+  });
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -114,6 +131,11 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenuItem>
+          <SidebarMenuButton onClick={() => mutate()}>Logout</SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarFooter>
     </Sidebar>
   );
 }

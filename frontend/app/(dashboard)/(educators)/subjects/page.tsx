@@ -25,7 +25,7 @@ export default function SubjectsPage() {
   const { api } = useAxios();
   const { subjects, refetch } = useSubjects();
 
-  const { mutate: AddSubject } = useMutation({
+  const { mutate: AddSubject, isPending: addingSubject } = useMutation({
     mutationKey: ["AddSubject"],
     mutationFn: async () => {
       const { data } = await api.post("/api/subjects", {
@@ -90,6 +90,7 @@ export default function SubjectsPage() {
                     AddSubject();
                   }
                 }}
+                loading={addingSubject}
               >
                 Add Subject
               </Button>
