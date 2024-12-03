@@ -1,4 +1,6 @@
+"use client";
 import { Card } from "../ui/card";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 export default function FeatureCard() {
   return (
@@ -12,6 +14,7 @@ export default function FeatureCard() {
             You can create a group of students, by inviting them via emails to
             join you group
           </div>
+          <DotLottieReact src="/animation1.lottie" loop autoplay />
         </Card>
         <Card className="flex flex-col gap-2 bg-white p-4">
           <div className="p-1 bg-muted w-fit rounded">02</div>
@@ -20,6 +23,7 @@ export default function FeatureCard() {
             Create a new subject from your account, add students group to that
             subject
           </div>
+          <DotLottieReact src="/animation2.lottie" loop autoplay />
         </Card>
         <Card className="flex flex-col gap-2 bg-white p-4">
           <div className="p-1 bg-muted w-fit rounded">03</div>
@@ -28,6 +32,8 @@ export default function FeatureCard() {
             Schedule a class for a subject whenever you want, and all student
             groups will be invited.
           </div>
+
+          <DotLottieReact src="/animation3.lottie" loop autoplay />
         </Card>
       </div>
     </div>
