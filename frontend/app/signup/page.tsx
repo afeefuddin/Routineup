@@ -35,6 +35,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
+import { Separator } from "@/components/ui/separator";
 
 function Page() {
   const [, startTransition] = useTransition();
@@ -74,7 +75,7 @@ function Page() {
       const response = await api.put("/public/api/signup/" + userId, data);
       return response;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast({
         title: "Account created",
       });
@@ -102,134 +103,147 @@ function Page() {
     });
   }
   return (
-    <div className="min-h-screen flex items-center w-full bg-teal-200">
-      {showOtpPanel && userId.length > 0 ? (
-        <Card className="max-w-sm m-auto">
-          <CardHeader className="space-y-1">
-            <CardTitle>Enter the OTP</CardTitle>
-            <CardDescription>
-              An OTP has been sent to your email address
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <InputOTP
-              maxLength={6}
-              value={otpValue}
-              onChange={(value) => setOtpValue(value)}
-            >
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-              </InputOTPGroup>
-              <InputOTPSeparator />
-              <InputOTPGroup>
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
-              </InputOTPGroup>
-            </InputOTP>
-            <Button
-              onClick={() => {
-                if (otpValue.length === 6) {
-                  verifyOtp({ otp: otpValue, userId });
-                }
-              }}
-            >
-              {isOtpPending ? "Verifying..." : "Verify OTP"}
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="max-w-sm m-auto">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl">Create an account</CardTitle>
-            <CardDescription>
-              Enter your email below to create your account
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-2"
+    <div className="h-screen flex flex-col bg-white">
+      <Link href="/">
+        <div className="p-4 text-xl font-bold">RoutineUp</div>
+      </Link>
+      <div className="flex w-full h-full">
+        {showOtpPanel && userId.length > 0 ? (
+          <Card className=" m-auto">
+            <CardHeader className="space-y-1">
+              <CardTitle>Enter the OTP</CardTitle>
+              <CardDescription>
+                An OTP has been sent to your email address
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <InputOTP
+                maxLength={6}
+                value={otpValue}
+                onChange={(value) => setOtpValue(value)}
               >
-                <div className="grid gap-2">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            id="email"
-                            type="email"
-                            {...field}
-                            placeholder="m@example.com"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Username</FormLabel>
-                        <FormControl>
-                          <Input
-                            id="username"
-                            type="text"
-                            {...field}
-                            placeholder="john_doe"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            id="password"
-                            type="password"
-                            {...field}
-                            placeholder="Your Password"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <Button className="w-full mt-6" loading={signingUp}>
-                  Create account
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-          <CardFooter className="flex items-center justify-center">
-            <div className="text-sm">
-              Already have an account?{" "}
-              <Link href="/login" className="text-blue-600">
-                Login
-              </Link>
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                </InputOTPGroup>
+                <InputOTPSeparator />
+                <InputOTPGroup>
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+              <Button
+                onClick={() => {
+                  if (otpValue.length === 6) {
+                    verifyOtp({ otp: otpValue, userId });
+                  }
+                }}
+              >
+                {isOtpPending ? "Verifying..." : "Verify OTP"}
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="mx-auto border-none shadow-none">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-3xl text-center">
+                Create an account
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="flex flex-col gap-2"
+                >
+                  <div className="grid gap-2">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              id="email"
+                              type="email"
+                              {...field}
+                              placeholder="m@example.com"
+                              className="bg-zinc-100 border-none focus:bg-background focus-visible:ring-black focus-visible:ring-2 h-12 px-4 font-semibold"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <FormField
+                      control={form.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Username</FormLabel>
+                          <FormControl>
+                            <Input
+                              id="username"
+                              type="text"
+                              {...field}
+                              placeholder="john_doe"
+                              className="bg-zinc-100 border-none focus:bg-background focus-visible:ring-black focus-visible:ring-2 h-12 px-4 font-semibold"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input
+                              id="password"
+                              type="password"
+                              {...field}
+                              placeholder="Your Password"
+                              className="bg-zinc-100 border-none focus:bg-background focus-visible:ring-black focus-visible:ring-2 h-12 px-4 font-semibold"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <Button
+                    className="w-80 md:w-96 py-6 text-md font-bold rounded-xl mt-6"
+                    loading={signingUp}
+                  >
+                    Create account
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+            <div className="px-4 mb-4 flex items-center justify-center">
+              <Separator />
             </div>
-          </CardFooter>
-        </Card>
-      )}
+            <CardFooter className="flex items-center justify-center">
+              <div className="text-md font-medium">
+                Already have an account?{" "}
+                <Link href="/login" className="underline">
+                  Login
+                </Link>
+              </div>
+            </CardFooter>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

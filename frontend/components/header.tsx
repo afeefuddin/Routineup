@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 
 export default function Header() {
   return (
-    <div className="p-6 flex justify-between items-center ">
+    <div className="p-6 flex justify-between items-center border border-x-0 border-t-0">
       <div className="text-2xl font-bold text-primary-foreground">
         RoutineUp
       </div>

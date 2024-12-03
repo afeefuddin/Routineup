@@ -28,6 +28,7 @@ import { useMutation } from "@tanstack/react-query";
 import useAxios from "@/hooks/use-axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 function Page() {
   const [isPending, startTransition] = useTransition();
@@ -71,80 +72,91 @@ function Page() {
   };
 
   return (
-    <div className="h-screen flex items-center w-full bg-teal-200">
-      <Card className="max-w-sm m-auto">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to create your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="flex flex-col gap-2"
-            >
-              <div className="grid gap-2">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="email"
-                          type="email"
-                          {...field}
-                          placeholder="m@example.com"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="grid gap-2">
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="password"
-                          type="password"
-                          {...field}
-                          placeholder="Your Password"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <Button
-                type="submit"
-                disabled={isPending}
-                className="w-full mt-6"
-                loading={loggingIn}
+    <div className="h-screen flex flex-col bg-white">
+      <Link href="/">
+        <div className="w-full p-4 text-text text-xl font-semibold">
+          RoutineUp
+        </div>
+      </Link>
+      <div className=" flex  w-full h-full">
+        <Card className=" mx-auto border-none shadow-none ">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-3xl text-center text-text">
+              Welcome back
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-2"
               >
-                Login
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter className="flex items-center justify-center">
-          <div className="text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-blue-600">
-              Signup
-            </Link>
+                <div className="grid gap-2">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            id="email"
+                            type="email"
+                            {...field}
+                            placeholder="m@example.com"
+                            className="bg-zinc-100 border-none focus:bg-background focus-visible:ring-black focus-visible:ring-2 h-12 px-4 font-semibold"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            id="password"
+                            type="password"
+                            {...field}
+                            placeholder="Your Password"
+                            className="bg-zinc-100 border-none focus:bg-background focus-visible:ring-black focus-visible:ring-2 h-12 px-4 font-semibold"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="w-80 md:w-96 py-6 rounded-xl font-bold text-md mt-6"
+                  loading={loggingIn}
+                >
+                  Login
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+          <div className="px-4 mb-4 flex items-center justify-center">
+            <Separator />
           </div>
-        </CardFooter>
-      </Card>
+          <CardFooter className="flex items-center justify-center">
+            <div className="text-md font-medium">
+              Don&apos;t have an account?{" "}
+              <Link href="/signup" className="underline">
+                Signup
+              </Link>
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }
