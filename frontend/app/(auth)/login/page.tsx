@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -29,11 +28,13 @@ import useAxios from "@/hooks/use-axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import useUser from "@/hooks/use-user";
 
 function Page() {
   const [isPending, startTransition] = useTransition();
   const [loggingIn, isLogginIn] = useState(false);
   const { api: axios, refetchToken } = useAxios(true);
+  const { refetch: refetchUser } = useUser();
   const router = useRouter();
   const { toast } = useToast();
   const { mutate: login } = useMutation({
@@ -44,10 +45,9 @@ function Page() {
       return response;
     },
     onSuccess: (values) => {
-      console.log(values.result);
       localStorage.setItem("token", values.result.token);
       refetchToken();
-      console.log("Logged in");
+      refetchUser();
       router.push("/home");
     },
     onError: () => {
@@ -66,7 +66,6 @@ function Page() {
   });
   const onSubmit = (values: LoginForm) => {
     startTransition(() => {
-      console.log(values);
       login(values);
     });
   };

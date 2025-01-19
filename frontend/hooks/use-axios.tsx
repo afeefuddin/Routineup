@@ -17,9 +17,6 @@ export default function useAxios(publicRoute = false) {
     },
   });
 
-  // if (!publicRoute && !token && !isLoading) {
-
-  // }
   if (!backend_origin) {
     throw new Error("Backend origin not found");
   }

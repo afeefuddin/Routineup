@@ -40,7 +40,6 @@ export default function SubjectDetailsPage() {
     queryKey: ["subject-data", subjectId],
     queryFn: async () => {
       const data = await api.get(`/api/subjects/${subjectId}`);
-      console.log(data);
       return data.result;
     },
   });
@@ -61,7 +60,6 @@ export default function SubjectDetailsPage() {
       !subjectDetails?.groups?.map((g) => g.public_id).includes(group.public_id)
   );
 
-  console.log(remainingGroups);
 
   return (
     <div className="container mx-auto p-4 space-y-6">

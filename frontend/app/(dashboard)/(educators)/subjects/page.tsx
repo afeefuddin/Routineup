@@ -42,7 +42,6 @@ export default function SubjectsPage() {
     setNewSubject({ ...newSubject, [e.target.name]: e.target.value });
   };
 
-  console.log(subjects);
 
   return (
     <div className="container mx-auto p-4 space-y-6">

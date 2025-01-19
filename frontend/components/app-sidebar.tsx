@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import useUser from "@/hooks/use-user";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxios from "@/hooks/use-axios";
 import { useRouter } from "next/navigation";
 
@@ -88,6 +88,7 @@ const Studentitems = [
 
 export function AppSidebar() {
   const { user } = useUser();
+  const queryClient = useQueryClient();
   const router = useRouter();
   const { mutate } = useMutation({
     mutationKey: ["logout"],
@@ -95,6 +96,7 @@ export function AppSidebar() {
       localStorage.clear();
     },
     onSuccess() {
+      queryClient.removeQueries();
       router.push("/login");
     },
   });

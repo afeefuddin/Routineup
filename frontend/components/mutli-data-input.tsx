@@ -21,7 +21,6 @@ export default function TagInput({tags, setTags}: {tags: string[], setTags: Disp
 
   const addTag = () => {
     const trimmedInput = inputValue.trim();
-    console.log(trimmedInput);
     const newValues = trimmedInput.split(",");
     if (trimmedInput && !tags.includes(trimmedInput)) {
       setTags([...tags, ...newValues]);

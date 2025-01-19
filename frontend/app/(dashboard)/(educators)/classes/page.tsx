@@ -51,8 +51,6 @@ export default function UpcomingClassesPage() {
     },
   });
 
-  console.log(classes);
-
   const classesForSelectedDate = selectedDate
     ? classes?.filter((c) => isSameDay(c.start_time, selectedDate))
     : [];

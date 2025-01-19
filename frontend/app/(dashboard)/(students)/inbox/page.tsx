@@ -53,16 +53,10 @@ export default function InvitesPage() {
   });
 
   const handleAccept = (id: string) => {
-    // Here you would typically send an API request to accept the invite
-    console.log(`Accepted invite ${id}`);
-    // setInvites(invites.filter((invite) => invite.id !== id));
     mutate({ status: "accepted", id });
   };
 
   const handleDecline = (id: string) => {
-    // Here you would typically send an API request to decline the invite
-    console.log(`Declined invite ${id}`);
-    // setInvites(invites.filter((invite) => invite.id !== id));
     mutate({ status: "declined", id });
   };
 

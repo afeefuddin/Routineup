@@ -78,7 +78,6 @@ export default function GroupsPage() {
                 type="submit"
                 className="w-full"
                 onClick={() => {
-                  console.log(emails);
                   if (newGroup && emails) {
                     createGroup();
                   }

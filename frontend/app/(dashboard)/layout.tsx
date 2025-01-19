@@ -7,15 +7,13 @@ import { useEffect } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, isLoading, isError, isPending } = useUser();
-  console.log(user, isLoading, isError, isPending);
   const router = useRouter();
   useEffect(() => {
-    if (isError) {
+    if (isError && !isLoading) {
       router.replace("/login");
     }
-  }, [user, isLoading, isError]);
+  }, [user, isLoading, isError, router]);
 
-  // console.log(isLoading, isError, isPending)
   if (isLoading || isError || isPending) {
     return <div>Loading...</div>;
   }

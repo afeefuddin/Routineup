@@ -97,10 +97,8 @@ export default function Classes() {
 
   const handleAddClass = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("New class:", newClass);
     addClass(newClass);
   };
-  console.log(classData);
   if (!classData) {
     return <div>Loading...</div>;
   }
